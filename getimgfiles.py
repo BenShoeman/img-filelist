@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 
 import os
-import pyperclip
 import subprocess
 import sys
 
