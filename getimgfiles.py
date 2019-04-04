@@ -17,7 +17,6 @@ def main(argv):
         print_type = DirectoryPlainText
     imgs_dir = argv[1]
 
-    all_trees = ""
     for img_dir in sorted(os.listdir(imgs_dir)):
         # If file doesn't follow the standard, try the "data" folder
         img_file = os.path.join(imgs_dir, img_dir, img_dir + ".img")
@@ -28,7 +27,6 @@ def main(argv):
         output, err = fls_process.communicate()
 
         if err is not None or "Error" in output.decode():
-            all_trees += "Error reading image " + img_dir + ("<br/><br/>" if print_type == DirectoryHTMLText else "") + "\n\n"
             print("Error reading image", img_dir, end=":\n")
             print(output.decode())
             continue
@@ -52,14 +50,14 @@ def main(argv):
                     floppy_tree.add_file(file_name)
         else:
             # Treat it as an HFS file system
+            
+            # Extract files from HFS image in temporary directory
             if not os.path.exists("/tmp/getimgfiles"):
                 try:
                     os.makedirs("/tmp/getimgfiles")
                 except FileExistsError:
                     subprocess.run(["rm", "-r", "/tmp/getimgfiles"])
                     os.makedirs("/tmp/getimgfiles")
-            
-            # Extract files from HFS image in temporary directory
             subprocess.run(["/usr/share/hfsexplorer/bin/unhfs", "-o", "/tmp/getimgfiles", img_file])
 
             # Get directory info using find
@@ -85,11 +83,12 @@ def main(argv):
             # Now clean up
             subprocess.run(["rm", "-r", "/tmp/getimgfiles"])
         
-        all_trees += floppy_tree.get_tree_text() + ("<br/><br/>" if print_type == DirectoryHTMLText else "") + "\n\n"
-        # print(all_trees, end="")
-
-    pyperclip.copy(all_trees)
-    print("Copied to clipboard!")
+        # Create text file in that directory with the file list info, plus some
+        # text that describes where the data comes from
+        txt_file = os.path.join(imgs_dir, img_dir, img_dir + ".txt")
+        with open(txt_file, "w") as f:
+            # Add description text here when I get it
+            f.write(floppy_tree.get_tree_text())
 
 if __name__ == "__main__":
     main(sys.argv)
