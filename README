@@ -1,0 +1,5 @@
+Usage:
+
+python3 getimgfiles.py <images directory> <optional: plain/html>
+
+Do not worry about output that says "cannot determine file system type"; this appears when sleuthkit's fls is not able to read an image. It could still be readable through the unhfs tool in HFS Explorer. If the images are truly unreadable by either, then the resulting text file will state that the image might not be readable.

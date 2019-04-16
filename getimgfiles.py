@@ -32,6 +32,11 @@ def main(argv):
 
         floppy_tree = Directory(img_dir, treeprint=print_type)
         if len(output.decode()) > 0:
+            ### POTENTIAL FUTURE WORK: If getting file information like creation
+            ### or modified times is desired, this will be where that needs to
+            ### happen. It will have to be parsed from the fls output. Something
+            ### else will need to be done for HFS file systems
+
             # Get the directory information from the fls output
             for line in output.decode().split("\n"):
                 # Ignore blank lines and ones with system info directories like $OrphanFiles
@@ -58,6 +63,11 @@ def main(argv):
                     subprocess.run(["rm", "-r", "/tmp/getimgfiles"])
                     os.makedirs("/tmp/getimgfiles")
             subprocess.run(["/usr/share/hfsexplorer/bin/unhfs", "-o", "/tmp/getimgfiles", img_file])
+
+            ### POTENTIAL FUTURE WORK: If getting file information like creation
+            ### or modified times is desired, this will be where that needs to
+            ### happen. It will have to be parsed out probably from the command
+            ### `ls -lR` or `find <directory> -type d/f -ls`
 
             # Get directory info using find
             find_process = subprocess.Popen(["find", "/tmp/getimgfiles", "-type", "d"], stdout=subprocess.PIPE)
@@ -87,7 +97,15 @@ def main(argv):
         txt_file = os.path.join(imgs_dir, img_dir, img_dir + ".txt")
         with open(txt_file, "w") as f:
             # Add description text here when I get it
-            f.write(floppy_tree.get_tree_text())
+            f.write("INTRO DESCRIPTION TEXT HERE")
+            f.write("\n\n")
+            # If the floppy has no items, write that it has no children and may
+            # not be readable
+            if len(floppy_tree.children) == 0:
+                f.write(floppy_tree.name + " has no children. It may not be readable.")
+            # Else write the directory tree contents
+            else:
+                f.write(floppy_tree.get_tree_text())
 
 if __name__ == "__main__":
     main(sys.argv)
