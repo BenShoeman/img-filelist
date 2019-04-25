@@ -60,7 +60,8 @@ class Directory:
             self.__children = []
         else:
             self.__children = children
-        self.get_tree_text = lambda: treeprint.get_tree_text(self)
+        self.__treeprint = treeprint
+        self.__get_tree_text = lambda: treeprint.get_tree_text(self)
     
     @property
     def name(self):
@@ -101,12 +102,13 @@ class Directory:
         for x in self.__children:
             if x.name == name and isinstance(x, Directory):
                 return x
-        child = Directory(name, treeprint=treeprint)
+        child = Directory(name, treeprint=self.__treeprint)
         self.add_child(child)
         return child
     
     # This function is defined through the treeprint attribute.
-    # def get_tree_text(self)
+    def get_tree_text(self):
+        return self.__get_tree_text()
     
     # Console representation of object visible when print(object) is called
     def __repr__(self):
