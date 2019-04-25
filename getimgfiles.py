@@ -11,6 +11,7 @@ def main(argv):
         print("Usage: python3 {} <images directory> <optional: plain/html>".format(argv[0]))
         sys.exit(1)
     if len(argv) == 3:
+        # If another print_type is defined in direcs_files, this cold be changed
         print_type = DirectoryHTMLText if argv[2].lower() == "html" else DirectoryPlainText
     else:
         print_type = DirectoryPlainText
@@ -62,6 +63,10 @@ def main(argv):
                 except FileExistsError:
                     subprocess.run(["rm", "-r", "/tmp/getimgfiles"])
                     os.makedirs("/tmp/getimgfiles")
+            # unhfs will simply extract all the files to a directory, which I
+            # set to /tmp/getimgfiles
+            # The unhfs command is included in HFS explorer. If its installation
+            # directory changes, the command path will have to be changed too!
             subprocess.run(["/usr/share/hfsexplorer/bin/unhfs", "-o", "/tmp/getimgfiles", img_file])
 
             ### POTENTIAL FUTURE WORK: If getting file information like creation
@@ -89,7 +94,7 @@ def main(argv):
                 if len(line) > 0:
                     floppy_tree.add_file(line[1:]) # Ignore first slash
             
-            # Now clean up
+            # Now clean up that temporary directory
             subprocess.run(["rm", "-r", "/tmp/getimgfiles"])
         
         # Create text file in that directory with the file list info, plus some
